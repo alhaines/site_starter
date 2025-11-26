@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Haines Family Home - Gamepad Test{% endblock %}
+{% block content %}
+  <div class="menu-page">
+    <h1>Haines Family Home</h1>
+    <p id="start">Connect a gamepad and press any button to begin the test.</p>
+    <div id="gamepad-area"></div>
+  </div>
+  <script src="{{ url_for('static', filename='gm.js') }}"></script>
+{% endblock %}

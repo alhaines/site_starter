@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+{% block title %}{{ page_title or 'Menu' }}{% endblock %}
+{% block content %}
+    <div class="menu-page">
+        <h1>{{ page_title or 'Menu' }}</h1>
+        <div class="link-container">
+    {% for title, link, comment in links %}
+        <a href="{{ link }}" title="{{ comment }}">{{ title }}</a><br>
+    {% else %}
+        <p>No links available.</p>
+    {% endfor %}
+    <p>
+      <!-- Local helper link to the gamepad test page; kept in-menu for convenience -->
+      <a class="button" href="{{ url_for('menu.show_gm') }}">Test your Joystick</a>
+    </p>
+    <p><a class="button cancel" href="{{ url_for('auth.logout') }}">Logout</a></p>
+        </div>
+    </div>
+{% endblock %}

@@ -1,0 +1,10 @@
+{% extends "layout.html" %}
+{% block title %}Galleries{% endblock %}
+{% block content %}
+<h2>Galleries</h2>
+<ul>
+  {% for g in galleries %}
+    <li><a href="{{ url_for('gallery.show_gallery', slug=g['slug']) }}">{{ g['title'] }}</a> - {{ g['description'] }}</li>
+  {% endfor %}
+</ul>
+{% endblock %}

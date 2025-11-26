@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+{% block title %}Login{% endblock %}
+{% block content %}
+    {% if already_logged_in %}
+        <h2>Already logged in</h2>
+        <p>You're logged in as <strong>{{ username or 'Unknown' }}</strong>.</p>
+        <p><a class="button" href="{{ url_for('menu.show_menu') }}">Go to Menu</a>
+        <a class="button cancel" href="{{ url_for('auth.logout') }}">Logout</a></p>
+    {% else %}
+        <h2>Login</h2>
+        <form method="post" action="{{ url_for('auth.login') }}">
+            <p><label for="username">Username:</label><br><input type="text" name="username" id="username" required></p>
+            <p><label for="password">Password:</label><br><input type="password" name="password" id="password" required></p>
+            <p><button type="submit">Login</button></p>
+        </form>
+        <p>New user? <a href="{{ url_for('auth.register') }}">Register here</a>.</p>
+    {% endif %}
+{% endblock %}

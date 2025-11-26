@@ -1,0 +1,34 @@
+# /etc/systemd/system/login.service
+#
+# This service runs the 'site_starter' Flask app using the Gunicorn
+# production WSGI server.
+
+[Unit]
+Description=Gunicorn instance to serve the site_starter Flask app
+After=network.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+# Run as your user to have correct permissions
+User=your_user
+Group=your_user
+
+# Set the working directory to the project folder
+WorkingDirectory=/home/your_user/projects/site_starter/project
+
+# Set the PATH to include your Python environment
+# This ensures gunicorn and all dependencies are found
+# Adjust this path to match your Python installation (venv, conda, etc.)
+Environment="PATH=/home/your_user/miniconda3/envs/py/bin"
+
+# The command to start Gunicorn
+# --workers 3: A good starting number of processes
+# --bind 0.0.0.0:5056: Listen on port 5056 for all IPs
+ExecStart=/home/your_user/miniconda3/envs/py/bin/gunicorn --workers 3 --bind 0.0.0.0:5056 app:app
+
+# Restart the service if it ever fails
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

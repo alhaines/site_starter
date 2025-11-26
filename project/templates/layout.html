@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Links to our new, consistent stylesheet -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        <!-- Highslide assets (local vendor files). Served from /highslide/... -->
+        <link rel="stylesheet" href="{{ url_for('highslide_static', filename='highslide.css') }}">
+        <!-- Extra small stylesheet for IE6 if needed (kept for compatibility) -->
+        <link rel="stylesheet" href="{{ url_for('highslide_static', filename='highslide-ie6.css') }}">
+        <script src="{{ url_for('highslide_static', filename='highslide-with-gallery.packed.js') }}"></script>
+        <script>
+            // Configure Highslide to use the static route for graphics and sensible defaults
+            try {
+                hs.graphicsDir = "{{ url_for('highslide_static', filename='graphics/') }}";
+            } catch (e) {}
+            // sensible default appearance/behaviour for galleries
+            try {
+                hs.outlineType = 'drop-shadow';
+                hs.align = 'center';
+                hs.dimmingOpacity = 0.75;
+                hs.showCredits = false;
+                hs.addSlideshow({
+                    slideshowGroup: 'gallery',
+                    interval: 4000,
+                    repeat: false,
+                    useControls: true,
+                    overlayOptions: {
+                        className: 'highslide-overlay-controls',
+                        position: 'top right',
+                        opacity: .75
+                    }
+                });
+            } catch (e) {}
+        </script>
+    <title>{% block title %}Main Menu{% endblock %}</title>
+</head>
+<body>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <ul class=flashes>
+                {% for category, message in messages %}
+                    <li class="{{ category }}">{{ message }}</li>
+                {% endfor %}
+                </ul>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+
+        <!-- Adds the consistent link back to your main menu -->
+        <div class="main-menu-link">
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,210 @@
+/*
+ * filename: /home/al/projects/mainmenu/static/styles.css
+ *
+ * Clean, consistent stylesheet shared across login, menu and other pages.
+ */
+
+/* Base layout */
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    background-color: #000000;
+    color: #1c1e21;
+    margin: 0;
+    padding: 2em;
+}
+
+.container {
+    /* responsive sizing: shrink to viewport while keeping a comfortable max */
+    max-width: 900px;
+    width: min(900px, 96vw);
+    margin: auto;
+    background: #000000;
+    padding: 2em;
+    border-radius: 12px;
+    box-shadow: 0 6px 18px rgba(10,20,40,0.06);
+}
+
+h1, h2 {
+    color: #005a9c;
+    border-bottom: 2px solid #eee;
+    padding-bottom: 0.5em;
+}
+
+/* Flash messages */
+.flashes { list-style: none; padding: 0; margin-bottom: 1em; }
+.flashes .success { background: #d4edda; color: #155724; padding: 1em; border-radius: 4px; }
+.flashes .error { background: #f8d7da; color: #721c24; padding: 1em; border-radius: 4px; }
+
+/* Forms and tables */
+table { width: 100%; border-collapse: collapse; margin-top: 1em; }
+th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+th { background-color: #f8f9fa; }
+tr:nth-child(even) { background-color: #fdfdfd; }
+
+.contact-form .form-group, .form-actions { margin-bottom: 1em; }
+.contact-form label { display: block; margin-bottom: 5px; font-weight: bold; }
+.contact-form input[type="text"],
+.contact-form input[type="email"],
+.contact-form input[type="tel"],
+.contact-form input[type="password"],
+.contact-form textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+textarea { resize: vertical; }
+
+/* Buttons */
+.button, button {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 1em;
+    font-weight: bold;
+    color: purple;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.button:hover, button:hover { background-color: #0056b3; }
+.button.logout, .delete-btn { background-color: #dc3545; }
+.button.logout:hover, .delete-btn:hover { background-color: #c82333; }
+.button.cancel { background-color: #6c757d; }
+.button.cancel:hover { background-color: #5a6268; }
+
+.header { display: flex; justify-content: space-between; align-items: center; }
+.main-menu-link { text-align: center; margin-top: 2em; }
+
+/* Menu-specific styles */
+.link-container { margin-top: 1em; }
+
+/* Menu link buttons: light purple bubble style, responsive */
+.link-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-items: center;
+}
+.link-container a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 18px;
+    color: #2b014b; /* dark purple text */
+    background: linear-gradient(180deg, #efe8ff 0%, #e6ddff 100%);
+    border: 1px solid rgba(80,30,140,0.12);
+    box-shadow: 0 6px 12px rgba(80,30,140,0.06);
+    border-radius: 999px; /* pill / bubble */
+    text-decoration: none;
+    font-weight: 700;
+    font-size: clamp(0.95rem, 2.6vw, 1.05rem);
+    min-height: 44px; /* good touch target */
+    min-width: 120px;
+    padding-left: 18px;
+    padding-right: 18px;
+    transition: transform .12s ease, box-shadow .12s ease, background-color .12s ease;
+}
+.link-container a:hover,
+.link-container a:focus {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 22px rgba(80,30,140,0.10);
+}
+
+/* On small devices make each link full-width-ish for easy tapping */
+@media (max-width: 560px) {
+    .link-container {
+        gap: 10px;
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .link-container a {
+        width: 100%;
+        min-width: 0;
+        padding: 14px 16px;
+        font-size: 1.05rem;
+    }
+}
+
+/* Menu-specific centering */
+.menu-page h1 {
+    text-align: center;
+    margin-bottom: 0.6em;
+}
+.menu-page .link-container {
+    justify-content: center; /* center the bubble buttons as a group */
+}
+
+/* Gamepad UI styles (scoped under #gamepad-area) */
+#gamepad-area { padding-top: 1em; }
+#gamepad-area [id^="controller"] {
+    background: linear-gradient(180deg, #ffffff, #fbfbff);
+    border-radius: 10px;
+    padding: 12px;
+    margin: 10px 0;
+    box-shadow: 0 6px 14px rgba(20,20,40,0.06);
+}
+#gamepad-area h1 { font-size: 1.05rem; margin: 0 0 8px 0; color: #2b014b; }
+#gamepad-area .buttons { margin-bottom: 8px; }
+
+/* small square indicators for buttons; background-size is updated by JS */
+#gamepad-area .button {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    line-height: 40px;
+    text-align: center;
+    margin: 4px;
+    border-radius: 6px;
+    color: #111;
+    background-color: #f1f0f6; /* base */
+    background-image: linear-gradient(90deg, rgba(147,103,255,0.95), rgba(116,84,255,0.9));
+    background-repeat: no-repeat;
+    background-size: 0% 100%; /* JS will set to e.g. '50% 50%' */
+    transition: transform .08s ease, box-shadow .08s ease, background-size .08s linear;
+    box-shadow: 0 2px 6px rgba(20,20,40,0.06);
+    font-weight: 700;
+}
+#gamepad-area .button.pressed {
+    transform: translateY(-2px) scale(1.03);
+    box-shadow: 0 8px 18px rgba(80,30,140,0.14), inset 0 2px 6px rgba(255,255,255,0.12);
+    color: #fff;
+}
+
+#gamepad-area .axes { margin-top: 6px; }
+#gamepad-area .axis { width: 100%; display: block; margin: 6px 0; }
+
+/* Ensure site .button styles don't override gamepad indicators */
+#gamepad-area .button { font-size: 0.9rem; }
+
+/* Responsive */
+@media screen and (max-width: 768px) {
+    body { padding: 1em; }
+    .container { padding: 1em; }
+}
+
+/* Highslide tooltip styling (moved from gm.html) */
+.highslide-tooltip {
+        cursor: pointer;
+}
+
+/* Gamepad-specific small rules moved from gm.html. These are scoped under
+     #gamepad-area so they don't interfere with site-wide button styles.
+*/
+#gamepad-area .buttons, #gamepad-area .axes {
+        padding: 1em;
+}
+
+/*meter*/
+#gamepad-area .axis {
+    min-width: 200px;
+    margin: 1em;
+}
+
+/* Maintain a subtle pressed outline for gamepad indicators */
+#gamepad-area .button.pressed {
+    border: 1px solid red;
+}

@@ -1,0 +1,21 @@
+{% extends "layout.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<h2>{{ title }}</h2>
+{% set gallery_index = url_for('gallery.index') %}
+<div class="gallery-controls">
+  <button class="button back" onclick="(function(){ if (document.referrer && document.referrer.indexOf(location.hostname) !== -1) { history.back(); } else { window.location='{{ gallery_index }}'; } })();">Back</button>
+</div>
+<div class="link-container gallery-grid">
+  {% for img in images %}
+    {# Use Highslide grouping and inline captions similar to the PHP version you had #}
+    <a href="{{ img.url }}"
+       class="highslide"
+       onclick="return hs.expand(this, { slideshowGroup: 'gallery-{{ slug }}' })">
+      <img src="{{ img.thumb_url }}" alt="{{ img.file }}" />
+    </a>
+    {# Highslide will pick up the following element as the caption for this image #}
+    <div class="highslide-caption">{{ img.file }}</div>
+  {% endfor %}
+</div>
+{% endblock %}
