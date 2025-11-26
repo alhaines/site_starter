@@ -1,307 +1,278 @@
-# Site Starter - Flask Multi-User Web Application Template
+# Main Menu Application v1.0
 
-A complete, production-ready Flask application template for building a multi-user website with authentication, role-based access control, and modular design.
+This is a simple, clean, and secure web-based main menu application built with Python and the Flask web framework. It allows multiple users to register, log in, and access various menu items.
+
+This project is built using modern, modular, and secure coding practices.
 
 ## Features
 
-- **Multi-User Authentication:** Secure user registration and login with password hashing
-- **Role-Based Access Control:** 3-tier user levels (1=User, 2=Power User, 3=Admin)
-- **Cross-Subdomain Sessions:** Single sign-on across multiple subdomains (*.your_domain)
-- **Dynamic Menu System:** Database-driven menu with level-based filtering
-- **Photo Galleries:** Built-in photo gallery system with automatic thumbnail generation
-- **Modular Architecture:** Clean separation of concerns with Flask Blueprints
-- **Production Ready:** Includes systemd service file for deployment with Gunicorn
+-   **Multi-User Support:** Each user has a separate, secure login and can only see and manage their own contacts.
+-   **Secure Password Storage:** User passwords are not stored in plaintext. They are securely hashed using modern cryptographic standards (`werkzeug.security`).
+-   **Full CRUD Functionality:** Users can **C**reate, **R**ead, **U**pdate, and **D**elete their contacts through a clean web interface.
+-   **Role-Based Menu Access:** Menu items can be restricted by user level. Higher-level users see more options; lower-level users see only items appropriate to their access level.
+-   **Modular, Robust Backend:** The application is built on a modular design, separating the web routes (in `app.py`) from the application logic (in `MainMenu.py`).
+-   **Centralized Database Management:** Uses a global `MySql.py` module for all database connections, ensuring reliable database operations.
 
-## Quick Start
+## Requirements
 
-### Prerequisites
+1.  A Linux system with Python 3 and `pip`.
+2.  A working MySQL/MariaDB server.
+3.  The `werkzeug` and `flask` Python libraries (installation is handled by the installer).
 
-- Linux server with Python 3.7+
-- MySQL/MariaDB database server
-- Python `pip` package manager
+## Installation
 
-### Installation
+1.  Download or clone this project to a directory on your server (e.g., `~/projects/mainmenu`).
+2.  Navigate into the project directory: `cd ~/projects/mainmenu`
+3.  **Database Setup:** Before running the app, you must create the database and tables. An SQL script is provided to do this automatically.
+    *   First, ensure your MySQL database is properly configured.
+    *   Then, update the `config.py` file with the correct database name and your credentials.
+    *   Ensure that /home/$USER/.my.cnf contains your MySQL credentials.
+    *   Finally, import the provided schema file:
+        ```bash
+        mysql --defaults-file=/home/$USER/.my.cnf als < mainmenu_schema.sql
+        ```
+4.  **Install Python Dependencies:** A `requirements.txt` file is included. Install the necessary libraries with pip:
+    ```bash
+    pip install -r requirements.txt
+    ```
+    *(Note: You will need to create a `requirements.txt` file containing `Flask`, `PyMySQL`, and `Werkzeug`)*
 
-1. **Clone the repository:**
-   ```bash
-   cd ~/projects
-   git clone <your-repo-url> site_starter
-   cd site_starter/project
-   ```
+## Running the Application
 
-2. **Install Python dependencies:**
-   ```bash
-   pip install -r ../requirements.txt
-   ```
+### For Development / Testing:
 
-3. **Configure the application:**
-   ```bash
-   cp config.sample.py config.py
-   nano config.py
-   ```
-   
-   Update the following in `config.py`:
-   - MySQL credentials (host, user, password, database)
-   - SECRET_KEY (generate with: `python3 -c "import os; print(os.urandom(24).hex())"`)
+You can run the application directly using Python. This will start the built-in Flask development server.
 
-4. **Update domain references:**
-   
-   Replace `your_domain` with your actual domain in:
-   - `app.py`: SESSION_COOKIE_DOMAIN
-   - `auth.py`: Login redirect URL
-   
-   Replace `/home/your_user` with your actual home directory in:
-   - `app.py`: sys.path.append line
-   - `../login.service`: All paths
-
-5. **Set up the database:**
-   ```bash
-   mysql --defaults-file=/home/your_user/.my.cnf your_database < ../siteslinks.sample.sql
-   ```
-   
-   Or manually create the `siteslinks` table and import the sample data.
-
-6. **Create the users table:**
-   
-   Create a `users` table in your database with this structure:
-   ```sql
-   CREATE TABLE `users` (
-     `id` int(11) NOT NULL AUTO_INCREMENT,
-     `username` varchar(50) NOT NULL UNIQUE,
-     `password_hash` varchar(255) NOT NULL,
-     `firstname` varchar(100) DEFAULT NULL,
-     `lastname` varchar(100) DEFAULT NULL,
-     `address` varchar(255) DEFAULT NULL,
-     `city` varchar(100) DEFAULT NULL,
-     `state` varchar(50) DEFAULT NULL,
-     `zipcode` varchar(20) DEFAULT NULL,
-     `birthday` date DEFAULT NULL,
-     `email` varchar(100) DEFAULT NULL,
-     `phone1` varchar(20) DEFAULT NULL,
-     `phone2` varchar(20) DEFAULT NULL,
-     `comment` text DEFAULT NULL,
-     `level` tinyint(4) DEFAULT 1,
-     PRIMARY KEY (`id`)
-   ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-   ```
-
-7. **Run the development server:**
-   ```bash
-   python3 app.py
-   ```
-   
-   Access the application at `http://localhost:5056`
-
-### Production Deployment
-
-1. **Install Gunicorn:**
-   ```bash
-   pip install gunicorn
-   ```
-
-2. **Configure the systemd service:**
-   ```bash
-   sudo cp ../login.service /etc/systemd/system/
-   sudo systemctl daemon-reload
-   sudo systemctl enable login.service
-   sudo systemctl start login.service
-   ```
-
-3. **Check service status:**
-   ```bash
-   sudo systemctl status login.service
-   ```
-
-4. **Configure reverse proxy (nginx/Apache):**
-   
-   Set up a reverse proxy to forward requests from your domain to port 5056.
-   
-   Example nginx config:
-   ```nginx
-   server {
-       listen 80;
-       server_name login.your_domain;
-       
-       location / {
-           proxy_pass http://127.0.0.1:5056;
-           proxy_set_header Host $host;
-           proxy_set_header X-Real-IP $remote_addr;
-       }
-   }
-   ```
-
-## Project Structure
-
-```
-site_starter/
-├── README.md                    # This file
-├── requirements.txt             # Python dependencies
-├── login.service               # Systemd service file
-├── siteslinks.sample.sql       # Sample menu links database
-└── project/                    # Main application directory
-    ├── app.py                  # Flask application entry point
-    ├── config.sample.py        # Configuration template
-    ├── MySql.py                # Database connection wrapper
-    ├── auth.py                 # Authentication blueprint
-    ├── auth_api.py             # Authentication API for other apps
-    ├── menu.py                 # Menu generator class
-    ├── menu_view.py            # Menu view blueprint
-    ├── gallery.py              # Photo gallery blueprint
-    ├── templates/              # HTML templates
-    │   ├── login.html
-    │   ├── register.html
-    │   ├── menu.html
-    │   ├── gallery_list.html
-    │   └── gallery_grid.html
-    └── static/                 # Static assets (CSS, JS, images)
-        ├── styles.css
-        └── gallery/            # Gallery photos
+```bash
+cd ~/projects/mainmenu
+python3 ./app.py
 ```
 
-## User Levels
+## User Levels and Menu Access
 
-The application supports 3 user access levels:
+The application supports **role-based access control** via user levels. Each menu item in the `siteslinks` table has a `level` field that determines the minimum user level required to view that item.
 
-- **Level 1 (User):** Default registered users. See public menu items.
-- **Level 2 (Power User):** Advanced users with access to additional features.
-- **Level 3 (Admin):** Full access to all menu items including admin tools.
+### Level Hierarchy
+
+- **Level 0:** Anonymous users (not logged in). See no menu items.
+- **Level 1:** Default registered users. See public menu items (galleries, book library, address book, etc.).
+- **Level 3:** Admin/power users. See all menu items including admin tools (Media Library, Blog, File Browser, GeminiAI, Admin).
+
+### How It Works
+
+1. When a user logs in, their `level` is retrieved from the `users` table and stored in the Flask session (`session['level']`).
+2. When the menu page (`/menu`) is rendered, `menu_view.py` filters the `siteslinks` table to show only items where `level <= user_level`.
+3. This filtering happens **server-side** in Python, preventing client-side bypasses.
 
 ### Managing User Levels
 
-```sql
--- Grant admin privileges (level 3)
-UPDATE users SET level = 3 WHERE username = 'admin_user';
+#### Setting a User's Level
 
--- Set power user (level 2)
-UPDATE users SET level = 2 WHERE username = 'power_user';
-
--- Set regular user (level 1)
-UPDATE users SET level = 1 WHERE username = 'regular_user';
-```
-
-### Managing Menu Item Access
+Users are created with `level=1` by default via the registration form. To change a user's level:
 
 ```sql
--- Restrict menu item to admins only
-UPDATE siteslinks SET level = 3 WHERE title = 'Admin Panel';
+-- Grant admin privileges (level 3) to a user
+UPDATE users SET level = 3 WHERE username = 'dee';
 
--- Make menu item available to power users and above
-UPDATE siteslinks SET level = 2 WHERE title = 'My Blog';
-
--- Make menu item public (all registered users)
-UPDATE siteslinks SET level = 1 WHERE title = 'Photo Gallery';
+-- Revoke admin privileges (set back to level 1)
+UPDATE users SET level = 1 WHERE username = 'dee';
 ```
 
-## Cross-Subdomain Authentication
+#### Changing a Menu Item's Required Level
 
-The application supports single sign-on across multiple subdomains using shared session cookies.
-
-### Configuration
-
-All apps using the shared authentication must:
-
-1. Use the **same SECRET_KEY**
-2. Use the **same SESSION_COOKIE_NAME** (default: 'your_session')
-3. Use the **same SESSION_COOKIE_DOMAIN** (e.g., '.your_domain')
-
-See the main README in `project/` for detailed integration instructions.
-
-## Customization
-
-### Adding Menu Items
-
-Insert new items into the `siteslinks` table:
+Edit the `siteslinks` table:
 
 ```sql
-INSERT INTO siteslinks (title, link, level, comment) 
-VALUES ('New Feature', 'http://feature.your_domain', 1, 'A new feature');
+-- Restrict an item to level 3 only (admin item)
+UPDATE siteslinks SET level = 3 WHERE title = 'My Media Library';
+
+-- Make an item public (level 1)
+UPDATE siteslinks SET level = 1 WHERE title = 'My Book Library';
 ```
 
-### Creating Photo Galleries
+### Database Schema Notes
 
-1. Create a new folder in `static/gallery/`:
-   ```bash
-   mkdir -p project/static/gallery/my_photos
-   ```
+- `users.level`: TINYINT field storing the user's access level (default 1).
+- `siteslinks.level`: VARCHAR field storing the required level for each menu item (should be normalized to TINYINT using `db_migrations/normalize_siteslinks_levels.sql`).
 
-2. Add images to the folder
+### Future Enhancements
 
-3. Add gallery entry to database (if using DB-driven gallery list):
-   ```sql
-   INSERT INTO galleries (title, slug, folder, description, public)
-   VALUES ('My Photos', 'my_photos', 'my_photos', 'My photo collection', 1);
-   ```
+- Role-based groups (e.g., "Admin", "Editor", "Viewer") instead of numeric levels.
+- Permission-based access (fine-grained control over specific features).
+- Audit logging to track who accessed what and when.
 
-4. Access at: `http://login.your_domain/gallery/my_photos/`
+---
 
-### Adding New Routes
+## Session Authentication Integration for Other Apps
 
-Create a new blueprint in a separate file:
+The mainmenu app serves as the **central authentication server** for all Flask applications in the workspace. Other apps can share the same login session across different subdomains using a reusable session authentication module.
+
+### How It Works
+
+1. **Mainmenu** handles user login and creates a session cookie
+2. The session cookie is shared across all `*.your.domain` subdomains
+3. Other apps import the `session_auth_check` module to verify authentication
+4. All apps use the **same secret key** and **cookie configuration** to decrypt the session
+
+### Adding Session Authentication to Your App
+
+Follow these steps to integrate session authentication into any Flask app:
+
+#### Step 1: Import the Session Check Module
+
+Add these imports to the top of your `app.py`:
 
 ```python
-from flask import Blueprint, render_template
-
-my_bp = Blueprint('my_feature', __name__)
-
-@my_bp.route('/my-route')
-def my_route():
-    return render_template('my_template.html')
+from flask import Flask, render_template, redirect
+import sys
+sys.path.append('/home/$USER/projects')
+from session_auth_check import is_logged_in, get_auth_status
 ```
 
-Register it in `app.py`:
+#### Step 2: Set the Shared Secret Key
+
+**Critical:** All apps MUST use the same secret key as mainmenu:
 
 ```python
-from my_feature import my_bp
-app.register_blueprint(my_bp)
+app = Flask(__name__)
+app.secret_key = 'my22kids'  # MUST match mainmenu's SECRET_KEY
 ```
 
-## Security Notes
+#### Step 3: Configure Session Cookie for Cross-Domain Sharing
 
-- **Change the SECRET_KEY** before deploying to production
-- Use **HTTPS in production** (set SESSION_COOKIE_SECURE=True)
-- Store database credentials securely (use environment variables or `.my.cnf`)
-- Regularly update dependencies: `pip install --upgrade -r requirements.txt`
-- Enable firewall rules to restrict database access
-- Use strong passwords for user accounts
+Add this configuration immediately after creating the Flask app:
 
-## Troubleshooting
-
-### "ModuleNotFoundError: No module named 'config'"
-
-Make sure you copied `config.sample.py` to `config.py` and updated it with your credentials.
-
-### "Access denied for user"
-
-Check your MySQL credentials in `config.py`. Ensure the database user has proper permissions.
-
-### Session not working across subdomains
-
-1. Verify SESSION_COOKIE_DOMAIN starts with a dot (`.your_domain`)
-2. Ensure all apps use the same SECRET_KEY
-3. Check that SESSION_COOKIE_NAME is identical across apps
-4. Clear browser cookies and try again
-
-### Service fails to start
-
-```bash
-# Check service logs
-sudo journalctl -u login.service -n 50
-
-# Check permissions
-ls -l /home/your_user/projects/site_starter/project
-
-# Verify Python path
-which gunicorn
+```python
+# Session configuration for cross-subdomain authentication
+app.config['SESSION_COOKIE_NAME'] = 'shared_session'
+app.config['SESSION_COOKIE_DOMAIN'] = '.your.domain'
+app.config['SESSION_COOKIE_PATH'] = '/'
+app.config['SESSION_COOKIE_HTTPONLY'] = True
+app.config['SESSION_COOKIE_SAMESITE'] = 'Lax'
+app.config['SESSION_COOKIE_SECURE'] = False  # False for HTTP, True for HTTPS
 ```
 
-## Contributing
+**Important Settings:**
+- `SESSION_COOKIE_NAME`: Must be `'shared_session'` (same for all apps)
+- `SESSION_COOKIE_DOMAIN`: Must be `'.your.domain'` (note the leading dot)
+- `SESSION_COOKIE_SECURE`: Set to `False` for HTTP, `True` for HTTPS only
 
-This is a template repository. Feel free to fork and customize for your needs.
+#### Step 4: Protect Your Routes
 
-## License
+Add authentication checks to your routes:
 
-This project is provided as-is for educational and personal use.
+```python
+@app.route('/')
+def index():
+    # Check authentication status (GO/NOGO)
+    if not is_logged_in():
+        # NOGO - Not logged in, redirect to login after 5 seconds
+        return f"""
+        <html>
+        <head>
+            <title>Your App - Not Logged In</title>
+            <meta http-equiv="refresh" content="5;url=http://login.your.domain/login">
+        </head>
+        <body>
+            <div style="background-color: #f8d7da; color: #721c24; padding: 20px; 
+                        border: 1px solid #f5c6cb; margin: 20px; text-align: center;">
+                <h2>✗ NOT LOGGED IN</h2>
+                <p>This application requires authentication to access.</p>
+                <p>Redirecting to login page in 5 seconds...</p>
+            </div>
+        </body>
+        </html>
+        """
+    
+    # GO - User is authenticated, run normal app logic
+    return render_template('index.html')
+```
 
-## Support
+For immediate redirects (no delay):
 
-For issues and questions, please create an issue in the repository.
+```python
+@app.route('/player/<int:item_id>')
+def player(item_id):
+    # Check authentication (GO/NOGO)
+    if not is_logged_in():
+        return redirect('http://login.your.domain/login')
+    
+    # GO - User authenticated
+    return render_template('player.html', item_id=item_id)
+```
+
+#### Step 5: Restart and Test
+
+1. Save your modified `app.py`
+2. Restart your Flask application
+3. Clear browser cookies for `your.domain` (if testing)
+4. Login via mainmenu at `http://login.your.domain/login`
+5. Access your app - it should recognize the session
+
+### Authentication Functions
+
+#### `is_logged_in()`
+Returns boolean GO/NOGO status.
+
+```python
+if is_logged_in():
+    # User is authenticated (GO)
+    return show_content()
+else:
+    # User is not authenticated (NOGO)
+    return redirect_to_login()
+```
+
+#### `get_auth_status()`
+Returns detailed authentication information as a dictionary:
+
+```python
+auth = get_auth_status()
+# Returns:
+# {
+#     'authenticated': True/False,
+#     'user_id': 7,
+#     'username': 'al',
+#     'level': 3
+# }
+```
+
+### Troubleshooting
+
+**Problem:** App shows "NOT LOGGED IN" even after logging in.
+
+**Solutions:**
+1. Verify `app.secret_key` matches mainmenu's SECRET_KEY exactly
+2. Check `SESSION_COOKIE_NAME = 'shared_session'` is set
+3. Confirm `SESSION_COOKIE_DOMAIN = '.your.domain'` (note the leading dot)
+4. Restart both mainmenu and your app
+5. Clear browser cookies and login again
+6. Verify accessing via `.your.domain` domain (not `localhost` or IP)
+7. Check `SESSION_COOKIE_SECURE = False` if using HTTP
+
+### Integration Checklist
+
+- [ ] Add `session_auth_check` import
+- [ ] Set `app.secret_key` to match mainmenu's SECRET_KEY
+- [ ] Configure `SESSION_COOKIE_NAME = 'shared_session'`
+- [ ] Configure `SESSION_COOKIE_DOMAIN = '.your.domain'`
+- [ ] Set `SESSION_COOKIE_SECURE = False` (for HTTP)
+- [ ] Add authentication check to main route
+- [ ] Add redirect on NOGO with 5-second delay
+- [ ] Protect sensitive routes with `is_logged_in()` checks
+- [ ] Restart the application
+- [ ] Test while logged out (should see redirect)
+- [ ] Test while logged in (should work normally)
+
+### Successfully Integrated Apps
+
+- ✅ **mainmenu** - Authentication server (port 5056)
+- ✅ **audio** - Audio player (port 5053)
+- ✅ **mediaplayer** - Media player
+
+### Additional Resources
+
+- **Detailed Integration Guide:** `/home/$USER/projects/mainmenu/SESSION_AUTH_INTEGRATION_GUIDE.md`
+- **Auth Module:** `/home/$USER/projects/session_auth_check.py`
+- **Usage Examples:** `/home/$USER/projects/USAGE_EXAMPLE_session_auth_check.py`
+- **Module Documentation:** `/home/$USER/projects/SESSION_AUTH_CHECK_README.md`
